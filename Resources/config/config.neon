@@ -1,0 +1,17 @@
+services:
+	assets:
+		class: Nette\DI\NestedAccessor(@container, 'assets')
+
+	assets.assetManager:
+		class: AssetsModule\Managers\AssetManager
+
+factories:
+	cssMacro:
+		factory: AssetsModule\Macros\CssMacro::install(%compiler%)
+		parameters: [compiler]
+		tags: [macro]
+
+	jsMacro:
+		factory: AssetsModule\Macros\JsMacro::install(%compiler%)
+		parameters: [compiler]
+		tags: [macro]
