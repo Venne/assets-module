@@ -12,6 +12,10 @@
 		"php" : ">=5.3.2",
 		"venne/framework" : "2.0.x-dev"
 	},
+	"autoload": {
+		"psr-0": { "AssetsModule": "" }
+	},
+	"target-dir": "AssetsModule",
 	"extra": {
 		"branch-alias": {
 			"dev-master": "2.0.x-dev"
