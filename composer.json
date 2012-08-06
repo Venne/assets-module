@@ -2,6 +2,7 @@
 	"name": "venne/assets-module",
 	"description": "Assets module with macros and components",
 	"keywords": ["cms", "nette", "venne", "module"],
+	"type": "venne-module",
 	"authors": [
 		{
 			"name": "Josef Kříž",
@@ -19,6 +20,13 @@
 	"extra": {
 		"branch-alias": {
 			"dev-master": "2.0.x-dev"
+		},
+		"venne": {
+			"configuration": {
+				"includes": [
+					"%libsDir%/venne/assets-module/AssetsModule/Resources/config/config.neon"
+				]
+			}
 		}
 	}
 }
