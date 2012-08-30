@@ -13,7 +13,6 @@ namespace AssetsModule\Managers;
 
 use Venne;
 use Nette\Object;
-use Nette\DI\Container;
 use Nette\Caching\Cache;
 
 /**
@@ -38,8 +37,8 @@ class AssetManager extends Object
 	/** @var array */
 	protected $validParams = array("media", "alias", "parent", "type");
 
-	/** @var \SystemContainer */
-	protected $container;
+	/** @var string */
+	protected $basePath;
 
 	/** @var array */
 	protected $css = array();
@@ -52,11 +51,11 @@ class AssetManager extends Object
 	/**
 	 * Constructor
 	 *
-	 * @param Container $container
+	 * @param \Nette\DI\Container $container
 	 */
-	public function __construct(Container $container)
+	public function __construct(\Nette\DI\Container $container)
 	{
-		$this->container = $container;
+		$this->basePath = $container->parameters['basePath'];
 	}
 
 
@@ -160,18 +159,7 @@ class AssetManager extends Object
 	 */
 	protected function getUrl($path)
 	{
-		if (substr($path, 0, 1) == "@") {
-			$pos = strpos($path, "/");
-			$moduleName = substr($path, 1, $pos - 1);
-
-			return $this->container->parameters["basePath"] . "/resources/" . lcfirst($moduleName) . "/" . substr($path, $pos + 1);
-		}
-
-		if (substr($path, 0, 7) == "http://" || substr($path, 0, 8) == "https://") {
-			return $path;
-		}
-
-		return $this->container->parameters["basePath"] . "/" . $path;
+		return $this->basePath . "/" . \Venne\Module\Helpers::expandResource($path);
 	}
 
 }
