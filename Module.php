@@ -11,20 +11,14 @@
 
 namespace AssetsModule;
 
-use Nette\Config\Compiler;
-use Nette\Config\Configurator;
-use Nette\DI\Container;
+use Venne;
+use Venne\Module\ComposerModule;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
-class Module extends \Venne\Module\Module {
+class Module extends ComposerModule
+{
 
-
-	/** @var string */
-	protected $version = "2.0";
-
-	/** @var string */
-	protected $description = "Assets module for Venne:CMS";
 
 }
