@@ -46,16 +46,18 @@ class AssetManager extends Object
 	/** @var array */
 	protected $js = array();
 
+	/** @var Venne\Module\Helpers */
+	protected $moduleHelpers;
 
 
 	/**
-	 * Constructor
-	 *
 	 * @param \Nette\DI\Container $container
+	 * @param \Venne\Module\Helpers $moduleHelpers
 	 */
-	public function __construct(\Nette\DI\Container $container)
+	public function __construct(\Nette\DI\Container $container, Venne\Module\Helpers $moduleHelpers)
 	{
 		$this->basePath = $container->parameters['basePath'];
+		$this->moduleHelpers = $moduleHelpers;
 	}
 
 
@@ -118,11 +120,11 @@ class AssetManager extends Object
 	protected function areParamsValid($params)
 	{
 		foreach ($params as $key => $item) {
-			if (array_search($key, $this->validParams) === false) {
-				return false;
+			if (array_search($key, $this->validParams) === FALSE) {
+				return FALSE;
 			}
 		}
-		return true;
+		return TRUE;
 	}
 
 
@@ -159,7 +161,7 @@ class AssetManager extends Object
 	 */
 	protected function getUrl($path)
 	{
-		return $this->basePath . "/" . \Venne\Module\Helpers::expandResource($path);
+		return $this->basePath . "/" . $this->moduleHelpers->expandResource($path);
 	}
 
 }
