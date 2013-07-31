@@ -11,7 +11,8 @@
 
 namespace AssetsModule\Macros;
 
-use Venne;
+use Nette\Latte\Compiler;
+use Venne\Module\Helpers;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -19,41 +20,44 @@ use Venne;
 class JsMacro extends \Nette\Latte\Macros\MacroSet
 {
 
+	/** @var string */
+	private $wwwDir;
 
-	public static function filter(\Nette\Latte\MacroNode $node, $writer)
+	/** @var Helpers */
+	private $moduleHelpers;
+
+
+	/**
+	 * @param string $wwwDir
+	 */
+	public function setWwwDir($wwwDir)
 	{
-		$path = $node->tokenizer->fetchWord();
-		$params = $writer->formatArray();
-
-		if (!$node->args) {
-			return 'ob_start();';
-		}
-
-		return ('$control->getPresenter()->getContext()->getService("assets.assetManager")->addJavascript("' . $path . '", ' . $params . '); ');
+		$this->wwwDir = $wwwDir;
 	}
 
 
-
-	public static function end(\Nette\Latte\MacroNode $node, $writer)
+	/**
+	 * @param Helpers $moduleHelpers
+	 */
+	public function setModuleHelpers(Helpers $moduleHelpers)
 	{
-		$path = $node->tokenizer->fetchWord();
-		$params = $writer->formatArray();
-
-		if (!$node->args) {
-			return '<?php $control->getPresenter()->getAssetManager()->addRawJavascript(ob_get_clean()); ?>';
-		}
-
-		return ('$control->getPresenter()->getContext()->getService("assets.assetManager")->addJavascript("' . $path . '", ' . $params . '); ');
+		$this->moduleHelpers = $moduleHelpers;
 	}
 
 
-
-	public static function install(\Nette\Latte\Compiler $compiler)
+	public function filter(\Nette\Latte\MacroNode $node, $writer)
 	{
-		$me = new static($compiler);
-		$me->addMacro('js', array($me, "filter"));
-		$me->addMacro('@external', array($me, "filter"), array($me, "end"));
+		$path = $this->wwwDir . '/' . $this->moduleHelpers->expandResource($node->tokenizer->fetchWord());
+		return ('$control->getPresenter()->getContext()->getService("assets.jsFileCollection")->addFile("' . $path . '"); ');
 	}
 
+
+	public static function install(Compiler $compiler, Helpers $moduleHelpers = NULL, $wwwDir = NULL)
+	{
+		$me = new static($compiler, $moduleHelpers, $wwwDir);
+		$me->setWwwDir($wwwDir);
+		$me->setModuleHelpers($moduleHelpers);
+		$me->addMacro('js', array($me, 'filter'));
+	}
 }
 

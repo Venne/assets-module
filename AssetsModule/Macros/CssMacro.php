@@ -11,7 +11,8 @@
 
 namespace AssetsModule\Macros;
 
-use Venne;
+use Nette\Latte\Compiler;
+use Venne\Module\Helpers;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -19,22 +20,44 @@ use Venne;
 class CssMacro extends \Nette\Latte\Macros\MacroSet
 {
 
+	/** @var string */
+	private $wwwDir;
 
-	public static function filter(\Nette\Latte\MacroNode $node, $writer)
+	/** @var Helpers */
+	private $moduleHelpers;
+
+
+	/**
+	 * @param string $wwwDir
+	 */
+	public function setWwwDir($wwwDir)
 	{
-		$path = $node->tokenizer->fetchWord();
-		$params = $writer->formatArray();
-
-		return ('$control->getPresenter()->getContext()->getService("assets.assetManager")->addStylesheet("' . $path . '", ' . $params . '); ');
+		$this->wwwDir = $wwwDir;
 	}
 
 
+	/**
+	 * @param Helpers $moduleHelpers
+	 */
+	public function setModuleHelpers(Helpers $moduleHelpers)
+	{
+		$this->moduleHelpers = $moduleHelpers;
+	}
 
-	public static function install(\Nette\Latte\Compiler $compiler)
+
+	public function filter(\Nette\Latte\MacroNode $node, $writer)
+	{
+		$path = $this->wwwDir . '/' . $this->moduleHelpers->expandResource($node->tokenizer->fetchWord());
+		return ('$control->getPresenter()->getContext()->getService("assets.cssFileCollection")->addFile("' . $path . '"); ');
+	}
+
+
+	public static function install(Compiler $compiler, Helpers $moduleHelpers = NULL, $wwwDir = NULL)
 	{
 		$me = new static($compiler);
-		$me->addMacro('css', array($me, "filter"));
+		$me->setWwwDir($wwwDir);
+		$me->setModuleHelpers($moduleHelpers);
+		$me->addMacro('css', array($me, 'filter'));
 	}
-
 }
 
