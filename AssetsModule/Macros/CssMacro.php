@@ -48,7 +48,7 @@ class CssMacro extends \Nette\Latte\Macros\MacroSet
 	public function filter(\Nette\Latte\MacroNode $node, $writer)
 	{
 		$path = $this->wwwDir . '/' . $this->moduleHelpers->expandResource($node->tokenizer->fetchWord());
-		return ('$control->getPresenter()->getContext()->getService("assets.cssFileCollection")->addFile("' . $path . '"); ');
+		return ("\$control->getPresenter()->getContext()->getService('assets.cssFileCollection')->addFile(" . var_export($path, TRUE) . "); ");
 	}
 
 

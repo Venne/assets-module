@@ -48,13 +48,13 @@ class JsMacro extends \Nette\Latte\Macros\MacroSet
 	public function filter(\Nette\Latte\MacroNode $node, $writer)
 	{
 		$path = $this->wwwDir . '/' . $this->moduleHelpers->expandResource($node->tokenizer->fetchWord());
-		return ('$control->getPresenter()->getContext()->getService("assets.jsFileCollection")->addFile("' . $path . '"); ');
+		return ("\$control->getPresenter()->getContext()->getService('assets.jsFileCollection')->addFile(" . var_export($path, TRUE) . "); ");
 	}
 
 
 	public static function install(Compiler $compiler, Helpers $moduleHelpers = NULL, $wwwDir = NULL)
 	{
-		$me = new static($compiler, $moduleHelpers, $wwwDir);
+		$me = new static($compiler);
 		$me->setWwwDir($wwwDir);
 		$me->setModuleHelpers($moduleHelpers);
 		$me->addMacro('js', array($me, 'filter'));
