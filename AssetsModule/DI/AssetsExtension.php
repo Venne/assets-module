@@ -61,7 +61,7 @@ class AssetsExtension extends CompilerExtension
 
 		// loaders
 		$container->addDefinition($this->prefix('cssLoader'))
-			->setClass('AssetsModule\CssLoader', array($this->prefix('@cssCompiler'), '/cache', '%wwwDir%'))
+			->setClass('AssetsModule\CssLoader', array($this->prefix('@cssCompiler'), '/cache'))
 			->setShared(FALSE)
 			->setAutowired(FALSE)
 			->addTag('widget', 'css');

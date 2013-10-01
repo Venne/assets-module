@@ -11,7 +11,9 @@
 
 namespace AssetsModule\Macros;
 
+use Nette\Latte\CompileException;
 use Nette\Latte\Compiler;
+use Nette\Latte\PhpWriter;
 use Venne\Module\Helpers;
 
 /**
@@ -45,10 +47,27 @@ class CssMacro extends \Nette\Latte\Macros\MacroSet
 	}
 
 
-	public function filter(\Nette\Latte\MacroNode $node, $writer)
+	public function filter(\Nette\Latte\MacroNode $node, PhpWriter $writer)
 	{
-		$path = $this->wwwDir . '/' . $this->moduleHelpers->expandResource($node->tokenizer->fetchWord());
-		return ("\$control->getPresenter()->getContext()->getService('assets.cssFileCollection')->addFile(" . var_export($path, TRUE) . "); ");
+		$files = array();
+		$pos = 0;
+		while($file = $node->tokenizer->fetchWord()) {
+
+			if (strpos($file, '=>') !== FALSE) {
+				$node->tokenizer->position = $pos;
+				break;
+			}
+
+			$files[] = $this->wwwDir . '/' . $this->moduleHelpers->expandResource($file);
+			$pos = $node->tokenizer->position;
+		}
+
+		if (!count($files)) {
+			throw new CompileException("Missing file name in {css}");
+		}
+
+		eval('$args = ' . $writer->formatArray() . ';');
+		return ("\$_control['css']->render('" . join('\', \'', $files) . "', array('config' => " . var_export($args, TRUE) . "));");
 	}
 
 

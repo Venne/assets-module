@@ -11,7 +11,6 @@
 
 namespace AssetsModule;
 
-use Venne\Module\Helpers;
 use WebLoader\Compiler;
 
 /**
@@ -23,20 +22,12 @@ class CssLoader extends \WebLoader\Nette\CssLoader
 	/** @var string */
 	private $relativeTempPath;
 
-	/** @var Helpers */
-	private $moduleHelpers;
 
-	/** @var string */
-	private $resourcesDir;
-
-
-	public function __construct(Compiler $compiler, $relativeTempPath, $resourcesDir, Helpers $moduleHelpers)
+	public function __construct(Compiler $compiler, $relativeTempPath)
 	{
 		parent::__construct($compiler, '');
 
 		$this->relativeTempPath = $relativeTempPath;
-		$this->resourcesDir = $resourcesDir;
-		$this->moduleHelpers = $moduleHelpers;
 	}
 
 
@@ -44,10 +35,30 @@ class CssLoader extends \WebLoader\Nette\CssLoader
 	{
 		$this->setTempPath($this->presenter->template->basePath . $this->relativeTempPath);
 
+		$this->setMedia(NULL);
+		$this->setType('text/css');
+		$this->setTitle(NULL);
+		$this->setAlternate(NULL);
+
 		$args = array();
 		if (func_num_args() > 0) {
 			foreach (func_get_args() as $arg) {
-				$args[] = $this->resourcesDir . '/' . $this->moduleHelpers->expandResource($arg);
+				if (is_array($arg) && isset($arg['config'])) {
+					if (isset($arg['config']['media'])) {
+						$this->setMedia($arg['config']['media']);
+					}
+					if (isset($arg['config']['type'])) {
+						$this->setType($arg['config']['type']);
+					}
+					if (isset($arg['config']['title'])) {
+						$this->setTitle($arg['config']['title']);
+					}
+					if (isset($arg['config']['alternate'])) {
+						$this->setAlternate($arg['config']['alternate']);
+					}
+				} else {
+					$args[] = $arg;
+				}
 			}
 		}
 

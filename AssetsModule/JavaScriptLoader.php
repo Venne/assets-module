@@ -35,7 +35,19 @@ class JavaScriptLoader extends \WebLoader\Nette\JavaScriptLoader
 	{
 		$this->setTempPath($this->presenter->template->basePath . $this->relativeTempPath);
 
-		parent::render();
+
+		$args = array();
+		if (func_num_args() > 0) {
+			foreach (func_get_args() as $arg) {
+				if (is_array($arg) && isset($arg['config'])) {
+
+				} else {
+					$args[] = $arg;
+				}
+			}
+		}
+
+		call_user_func_array(array($this, 'parent::render'), $args);
 	}
 }
 
