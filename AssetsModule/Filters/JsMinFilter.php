@@ -11,8 +11,6 @@
 
 namespace AssetsModule\Filters;
 
-use JsMin\Minify;
-
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
  */
@@ -21,7 +19,7 @@ class JsMinFilter
 
 	public function __invoke($code)
 	{
-		return Minify::minify($code);
+		return \JSMin::minify($code);
 	}
 }
 

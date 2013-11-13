@@ -15,7 +15,7 @@
 		"venne/framework": "2.0.*",
 		"janmarek/webloader": "2.1.1",
 		"natxet/CssMin": "dev-master",
-		"nick4fake/jsmin": "dev-master"
+		"linkorb/jsmin-php": "1.0.0"
 	},
 	"autoload": {
 		"psr-0": {
