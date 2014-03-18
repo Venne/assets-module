@@ -11,7 +11,7 @@
 
 namespace AssetsModule\DI;
 
-use Nette\Config\CompilerExtension;
+use Nette\DI\CompilerExtension;
 
 /**
  * @author Josef Kříž <pepakriz@gmail.com>
@@ -30,8 +30,8 @@ class AssetsExtension extends CompilerExtension
 
 		// macros
 		$container->getDefinition('nette.latte')
-			->addSetup('AssetsModule\Macros\CssMacro::install(?->compiler, ?, ?)', array('@self', '@venne.moduleHelpers', '%wwwDir%'))
-			->addSetup('AssetsModule\Macros\JsMacro::install(?->compiler, ?, ?)', array('@self', '@venne.moduleHelpers', '%wwwDir%'));
+			->addSetup('AssetsModule\Macros\CssMacro::install(?->compiler, ?, ?)', array('@self', '@venne.moduleHelpers', $this->getContainerBuilder()->expand('%wwwDir%')))
+			->addSetup('AssetsModule\Macros\JsMacro::install(?->compiler, ?, ?)', array('@self', '@venne.moduleHelpers', $this->getContainerBuilder()->expand('%wwwDir%')));
 
 
 		// collections
@@ -45,38 +45,37 @@ class AssetsExtension extends CompilerExtension
 		// compilers
 		$cssCompiler = $container->addDefinition($this->prefix('cssCompiler'))
 			->setClass('WebLoader\Compiler')
-			->setFactory('WebLoader\Compiler::createCssCompiler', array($this->prefix('@cssFileCollection'), '%wwwDir%/cache'))
+			->setFactory('WebLoader\Compiler::createCssCompiler', array($this->prefix('@cssFileCollection'), $this->containerBuilder->expand('%wwwDir%/cache')))
 			->addSetup('$service->addFileFilter(?)', array($this->prefix('@cssUrlsFilter')))
-			->addSetup('setCheckLastModified', array('%debugMode%'))
+			->addSetup('setCheckLastModified', array($this->containerBuilder->expand('%debugMode%')))
 			->addSetup('setJoinFiles', array(!$container->parameters['debugMode']))
 			->setAutowired(FALSE);
 
 		$jsCompiler = $container->addDefinition($this->prefix('jsCompiler'))
 			->setClass('WebLoader\Compiler')
-			->setFactory('WebLoader\Compiler::createJsCompiler', array($this->prefix('@jsFileCollection'), '%wwwDir%/cache'))
-			->addSetup('setCheckLastModified', array('%debugMode%'))
+			->setFactory('WebLoader\Compiler::createJsCompiler', array($this->prefix('@jsFileCollection'), $this->containerBuilder->expand('%wwwDir%/cache')))
+			->addSetup('setCheckLastModified', array($this->containerBuilder->expand($this->containerBuilder->expand('%debugMode%'))))
 			->addSetup('setJoinFiles', array(!$container->parameters['debugMode']))
 			->setAutowired(FALSE);
 
 
 		// loaders
-		$container->addDefinition($this->prefix('cssLoader'))
+		$container->addDefinition($this->prefix('cssLoaderFactory'))
 			->setClass('AssetsModule\CssLoader', array($this->prefix('@cssCompiler'), '/cache'))
-			->setShared(FALSE)
-			->setAutowired(FALSE)
+			->setImplement('AssetsModule\ICssLoaderFactory')
 			->addTag('widget', 'css');
 
 		$container->addDefinition($this->prefix('jsLoader'))
 			->setClass('AssetsModule\JavaScriptLoader', array($this->prefix('@jsCompiler'), '/cache'))
-			->setShared(FALSE)
+			->setImplement('AssetsModule\IJavaScriptLoaderFactory')
 			->setAutowired(FALSE)
 			->addTag('widget', 'js');
 
 
 		// filters
 		$container->addDefinition($this->prefix('cssUrlsFilter'))
-			->setClass('WebLoader\Filter\CssUrlsFilter', array('%wwwDir%'))
-			->addSetup('$service = new WebLoader\Filter\CssUrlsFilter(?, $this->parameters[\'basePath\'])', array('%wwwDir%'));
+			->setClass('WebLoader\Filter\CssUrlsFilter', array($this->containerBuilder->expand('%wwwDir%')))
+			->addSetup('$service = new WebLoader\Filter\CssUrlsFilter(?, $this->parameters[\'basePath\'])', array($this->containerBuilder->expand('%wwwDir%')));
 
 		$container->addDefinition($this->prefix('cssMinFilter'))
 			->setClass('AssetsModule\Filters\CssMinFilter');

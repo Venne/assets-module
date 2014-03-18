@@ -2,7 +2,7 @@
 	"name": "venne/assets-module",
 	"description": "Assets module with macros and components",
 	"keywords": ["cms", "nette", "venne", "module"],
-	"version": "2.1.0",
+	"version": "2.2.0",
 	"homepage": "http://venne.cz",
 	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"authors": [
@@ -13,8 +13,7 @@
 	],
 	"require": {
 		"php": ">=5.3.2",
-		"venne/framework": "2.0.*@dev",
-		"janmarek/webloader": "2.1.1",
+		"janmarek/webloader": "~2.2.0",
 		"natxet/CssMin": "dev-master@dev",
 		"linkorb/jsmin-php": "1.0.0"
 	},
